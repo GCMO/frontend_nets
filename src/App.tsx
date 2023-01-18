@@ -1,4 +1,8 @@
 import { useState, useCallback } from "react";
+import { Droppable, Draggable } from 'react-beautiful-dnd';
+import  update  from 'immutability-helper';
+
+
 import getData from "./api/getData";
 import { Button } from "./components/button";
 import { ToDoCard } from "./components/to-do-card";
@@ -20,6 +24,7 @@ const App: React.FC = () => {
     try {
       const response = await getData();
       setTodoList(response);
+      console.log('DATA', response)
     } catch (error) {
       console.error(error);
     } finally {
@@ -27,6 +32,28 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const onDragEnd = (result: any) => {
+    const { destination, source } = result;
+    if (!destination) {
+      return;
+    }
+    if (destination.index === source.index) {
+      return;
+    }
+    moveCard(source.index, destination.index);
+  };
+  
+  const moveCard = (dragIndex: number, hoverIndex: number) => {
+    const dragCard = todoList[dragIndex];
+    setTodoList(
+      update(todoList, {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, dragCard],
+        ],
+      }),
+    );
+  };
 
   return (
     <div className="App w-screen h-screen justify-center items-center m-12">
@@ -41,16 +68,40 @@ const App: React.FC = () => {
             </div>
         ) : todoList.length ? ( 
           <div className="container">
-            <div className="grid grid-col-3 gap-2 m-6">
-            { todoList.map((todo) => (
-                <ToDoCard 
-                  key={todo.id} 
-                  title={todo.title} 
-                  id={todo.id} 
-                  due_on={todo.due_on} 
-                  status={todo.status}  
-                />
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 m-5">
+              {/* { todoList.filter((todo) => {
+                return todo.status === "pending"
+              }).map((todo) => (
+                  <ToDoCard 
+                    key={todo.id} 
+                    title={todo.title} 
+                    id={todo.id} 
+                    due_on={todo.due_on} 
+                    status={todo.status}  
+                  /> 
+                  ))}
+              { todoList.filter((todo) => {
+                return todo.status === "completed"
+              }).map((todo) => (
+                  <ToDoCard 
+                    key={todo.id} 
+                    title={todo.title} 
+                    id={todo.id} 
+                    due_on={todo.due_on} 
+                    status={todo.status}  
+                  />
+                  ))} */}
+
+                {todoList.map((todo) => (
+                  <ToDoCard 
+                    key={todo.id} 
+                    title={todo.title} 
+                    id={todo.id} 
+                    due_on={todo.due_on} 
+                    status={todo.status}  
+                  />
+                  ))}
+                  
               </div> 
               <Button onClick={handleClick}/>
           </div>
@@ -66,6 +117,8 @@ const App: React.FC = () => {
 };
 
 
+export default App;
+
 // const RenderCard = () => {
 //   return (
 //     <div className="relative bg-slate-200 shadow-md rounded-lg px-6 py-6 w-56 mb-6">
@@ -74,5 +127,3 @@ const App: React.FC = () => {
 //     </div>
 //   );
 // };
-
-export default App;
