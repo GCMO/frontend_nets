@@ -57,7 +57,7 @@ const App: React.FC = () => {
 
   return (
     <div className="App w-screen h-screen justify-center items-center m-12">
-      <h1 className="text-3xl font-bold underline mb-6 ml-10">
+      <h1 className="text-3xl font-bold underline mb-5 ml-5">
         To do or Not to do
       </h1>
        
@@ -68,10 +68,11 @@ const App: React.FC = () => {
             </div>
         ) : todoList.length ? ( 
           <div className="container">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 m-5">
-              {/* { todoList.filter((todo) => {
-                return todo.status === "pending"
-              }).map((todo) => (
+            <div className="flex flex-row gap-3 bg-slate-200 rounded-lg">
+              <div className="flex-col w-1/2 text-xl p-4 "><b>PENDING</b>
+              { todoList
+                .filter((todo) => (todo.status === "pending"))
+                .map((todo) => (
                   <ToDoCard 
                     key={todo.id} 
                     title={todo.title} 
@@ -80,9 +81,11 @@ const App: React.FC = () => {
                     status={todo.status}  
                   /> 
                   ))}
-              { todoList.filter((todo) => {
-                return todo.status === "completed"
-              }).map((todo) => (
+              </div>
+              <div className="flex-col w-1/2 text-xl p-4"><b>COMPLETED</b>
+              { todoList
+                .filter((todo) => (todo.status === "completed"))
+                .map((todo) => (
                   <ToDoCard 
                     key={todo.id} 
                     title={todo.title} 
@@ -90,19 +93,9 @@ const App: React.FC = () => {
                     due_on={todo.due_on} 
                     status={todo.status}  
                   />
-                  ))} */}
-
-                {todoList.map((todo) => (
-                  <ToDoCard 
-                    key={todo.id} 
-                    title={todo.title} 
-                    id={todo.id} 
-                    due_on={todo.due_on} 
-                    status={todo.status}  
-                  />
-                  ))}
-                  
+                  ))} 
               </div> 
+            </div>
               <Button onClick={handleClick}/>
           </div>
         ) : (
