@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { Droppable, Draggable } from 'react-beautiful-dnd';
-import  update  from 'immutability-helper';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+// import  update  from 'immutability-helper';
 
 
 import getData from "./api/getData";
@@ -13,7 +13,6 @@ interface Todo {
   due_on: string;
   status: string;
 }
-
 
 const App: React.FC = () => {
   const [todoList, setTodoList] = useState<Todo[]>([]);
@@ -32,27 +31,13 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const onDragEnd = (result: any) => {
-    const { destination, source } = result;
-    if (!destination) {
-      return;
-    }
-    if (destination.index === source.index) {
-      return;
-    }
-    moveCard(source.index, destination.index);
-  };
-  
-  const moveCard = (dragIndex: number, hoverIndex: number) => {
-    const dragCard = todoList[dragIndex];
-    setTodoList(
-      update(todoList, {
-        $splice: [
-          [dragIndex, 1],
-          [hoverIndex, 0, dragCard],
-        ],
-      }),
-    );
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
+    const items = Array.from(todoList);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setTodoList(items);
   };
 
   return (
@@ -69,32 +54,63 @@ const App: React.FC = () => {
         ) : todoList.length ? ( 
           <div className="container">
             <div className="flex flex-row gap-3 bg-slate-200 rounded-lg">
-              <div className="flex-col w-1/2 text-xl p-4 "><b>PENDING</b>
-              { todoList
-                .filter((todo) => (todo.status === "pending"))
-                .map((todo) => (
-                  <ToDoCard 
-                    key={todo.id} 
-                    title={todo.title} 
-                    id={todo.id} 
-                    due_on={todo.due_on} 
-                    status={todo.status}  
-                  /> 
-                  ))}
-              </div>
-              <div className="flex-col w-1/2 text-xl p-4"><b>COMPLETED</b>
-              { todoList
-                .filter((todo) => (todo.status === "completed"))
-                .map((todo) => (
-                  <ToDoCard 
-                    key={todo.id} 
-                    title={todo.title} 
-                    id={todo.id} 
-                    due_on={todo.due_on} 
-                    status={todo.status}  
-                  />
-                  ))} 
-              </div> 
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId={'todoList'}>
+                  {(provided) => (
+                  <>
+                    <div className="flex-col w-1/2 text-xl p-4" {...provided.droppableProps} ref={provided.innerRef}> <b>PENDING </b>
+                    { todoList
+                      .filter((todo) => (todo.status === "pending")) 
+                      .map((todo, index) => (
+                        <Draggable key={todo.id} draggableId={`todoList`} index={index}>
+                          {(provided) => (
+                          <div
+                           ref={provided.innerRef}
+                           {...provided.draggableProps}
+                           {...provided.dragHandleProps}
+                          >   
+                            <ToDoCard 
+                              key={todo.id} 
+                              title={todo.title} 
+                              id={todo.id} 
+                              due_on={todo.due_on} 
+                              status={todo.status}  
+                            /> 
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+
+                    <div className="flex-col w-1/2 text-xl p-4" {...provided.droppableProps} ref={provided.innerRef}><b>COMPLETED</b>
+                    { todoList
+                      .filter((todo) => (todo.status === "completed"))
+                      .map((todo, index) => (
+                        <Draggable key={todo.id} draggableId={`todoList`} index={index}>
+                          {(provided) => (  
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >                          
+                            <ToDoCard 
+                              key={todo.id} 
+                              title={todo.title} 
+                              id={todo.id} 
+                              due_on={todo.due_on} 
+                              status={todo.status} 
+                            />
+                          </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  </>
+                  )}
+              </Droppable>
+            </DragDropContext>
             </div>
               <Button onClick={handleClick}/>
           </div>
@@ -111,12 +127,3 @@ const App: React.FC = () => {
 
 
 export default App;
-
-// const RenderCard = () => {
-//   return (
-//     <div className="relative bg-slate-200 shadow-md rounded-lg px-6 py-6 w-56 mb-6">
-//       <div className="absolute h-3 w-3 rounded-full bg-green-600 top-3 right-3"></div>
-//       What to do, what to do....
-//     </div>
-//   );
-// };
