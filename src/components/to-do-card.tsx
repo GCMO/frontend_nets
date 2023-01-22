@@ -11,7 +11,7 @@ interface CardProps {
 }
 
 
-export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => {
+export const ToDoCard: React.FC<CardProps> = () => {
 
   const [todoList, setTodoList] = useState<CardProps[]>([]);
 
