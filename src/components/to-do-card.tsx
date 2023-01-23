@@ -1,6 +1,6 @@
 import {useState, useCallback} from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-// import  update  from 'immutability-helper';
+import  update  from 'immutability-helper';
 
 import {Button} from './button';
 import getData from '../api/getData';
@@ -16,8 +16,7 @@ interface CardProps {
 export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => {
   const [todoList, setTodoList] = useState<CardProps[]>([]);
 
-  
-  
+
   const handleClick = useCallback (async () => {
     try {
       const response = await getData();
@@ -28,16 +27,24 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
     }
   }, []);
   
+
   const handleDragEnd = (result: DropResult ) => {
-    if (!result.destination || !todoList.length) return;
+    if (!result.destination) return;
     
-    const { source, destination } = result
-  
+    const { source, destination } = result 
+
+    // const newTodoList = update(todoList, {
+    //   $splice: [[result.source.index, 1], [result.destination.index, 0, todoList[result.source.index]]]
+    // });
+
+    // setTodoList(newTodoList); 
+    
     const items = Array.from(todoList);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-  
-    setTodoList(items);
+      const [reorderedItem] = items.splice(result.source.index, 1);
+      items.splice(result.destination.index, 0, reorderedItem);
+    
+      setTodoList(items);
+
   };
   
   return (
@@ -46,16 +53,15 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
       
         <DragDropContext onDragEnd={handleDragEnd}>  
           <div className="flex flex-row gap-3 bg-slate-200 rounded-lg">
-
-            <Droppable droppableId={"todoList"} key={'todoList'}>
-              {(provided, snapshot) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} > 
-                  <div className="flex-col w-1/2 text-xl p-4"> <b>PENDING </b>
-                    { todoList
-                    .filter((todo) => ( todo.status === "pending" )) 
-                    .map((todo, index) => ( 
-                      <Draggable key={todo.id} draggableId={todo.id.toString()} index={index}>
-                        {(provided, shapshot) => (
+            <div className="flex-col w-1/2 text-xl p-4"> <b>PENDING </b>
+              { todoList
+              .filter((todo) => ( todo.status === "pending" )) 
+              .map((todo, index) => ( 
+                <Droppable droppableId={todo.id.toString()} key={'todoList'}>
+                  {(provided, snapshot) => (
+                    <div ref={provided.innerRef} {...provided.droppableProps} > 
+                      <Draggable key={todo.id} draggableId={todo.id.toString()} index={todoList.indexOf(todo)}>
+                        {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
@@ -71,16 +77,21 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
                           </div>
                         )}
                       </Draggable>
+                    </div>
+                    )}
+                  </Droppable>
                     ))}
-                  </div>
 
                   <div className="flex-col w-1/2 text-xl p-4"><b>COMPLETED</b>
                   { todoList
                     .filter((todo) => (todo.status === "completed"))
                     .map((todo, index) => ( 
-                      <Draggable key={todo.id} draggableId={todo.id.toString()} index={index}>
-                        {(provided, shapshot) => (
-                          <div
+                      <Droppable droppableId={todo.id.toString()} key={'todoList'}>
+                        {(provided, snapshot) => (
+                          <div ref={provided.innerRef} {...provided.droppableProps} >
+                        <Draggable key={todo.id} draggableId={todo.id.toString()} index={todoList.indexOf(todo)}>
+                          {(provided, shapshot) => (
+                            <div        
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
@@ -95,17 +106,18 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
                           </div>
                         )}
                       </Draggable>
+                      {provided.placeholder}
+                    </div>
+                    )}
+                  </Droppable>
                     ))}
                   </div>
-                  {provided.placeholder}
                 </div>
-              )}
-            </Droppable>
             </div>
           <Button onClick={handleClick}/>
 
         </DragDropContext>
     </div>
   
-  )
+  );
 };

@@ -41,14 +41,14 @@ const App: React.FC<Todo> = (todo) => {
             </div>
 
           ) : todoList.length ? (    
-            <>
+            <div >
               <ToDoCard 
                   id={todo.id}
                   title={todo.title}
                   due_on={todo.due_on}
                   status={todo.status}
               />
-            </>
+            </div>
           ) : (
 
             <div className="text-xl m-14  ">
