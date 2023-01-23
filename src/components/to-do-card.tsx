@@ -1,6 +1,6 @@
 import {useState, useCallback} from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import  update  from 'immutability-helper';
+// import  update  from 'immutability-helper';
 
 import {Button} from './button';
 import getData from '../api/getData';
@@ -57,7 +57,7 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
               { todoList
               .filter((todo) => ( todo.status === "pending" )) 
               .map((todo, index) => ( 
-                <Droppable droppableId={todo.id.toString()} key={'todoList'}>
+                <Droppable droppableId={todo.id.toString()} key={todo.id}>
                   {(provided, snapshot) => (
                     <div ref={provided.innerRef} {...provided.droppableProps} > 
                       <Draggable key={todo.id} draggableId={todo.id.toString()} index={todoList.indexOf(todo)}>
@@ -77,6 +77,7 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
                           </div>
                         )}
                       </Draggable>
+                      {provided.placeholder}
                     </div>
                     )}
                   </Droppable>
@@ -89,7 +90,7 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
                   { todoList
                     .filter((todo) => (todo.status === "completed"))
                     .map((todo, index) => ( 
-                      <Droppable droppableId={todo.id.toString()} key={'todoList'}>
+                      <Droppable droppableId={todo.id.toString()} key={todo.id}>
                         {(provided, snapshot) => (
                           <div ref={provided.innerRef} {...provided.droppableProps} >
                         <Draggable key={todo.id} draggableId={todo.id.toString()} index={todoList.indexOf(todo)}>
@@ -109,7 +110,7 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
                           </div>
                         )}
                       </Draggable>
-                      {/* {provided.placeholder} */}
+                      {provided.placeholder}
                     </div>
                     )}
                   </Droppable>
