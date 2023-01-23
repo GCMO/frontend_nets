@@ -50,10 +50,10 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
   return (
     
     <div className="container">
-      
         <DragDropContext onDragEnd={handleDragEnd}>  
+
           <div className="flex flex-row gap-3 bg-slate-200 rounded-lg">
-            <div className="flex-col w-1/2 text-xl p-4"> <b>PENDING </b>
+            <div className="flex-col w-2/3 text-xl p-4"> <b>PENDING </b>
               { todoList
               .filter((todo) => ( todo.status === "pending" )) 
               .map((todo, index) => ( 
@@ -80,9 +80,12 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
                     </div>
                     )}
                   </Droppable>
-                    ))}
+                  ))}
+            </div>
 
-                  <div className="flex-col w-1/2 text-xl p-4"><b>COMPLETED</b>
+               <div className="flex flex-row gap-3 bg-slate-200 rounded-lg">
+  
+                  <div className="flex-col w-2/1 text-xl p-4"><b>COMPLETED</b>
                   { todoList
                     .filter((todo) => (todo.status === "completed"))
                     .map((todo, index) => ( 
@@ -98,7 +101,7 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
                             >
                             <div key={index} className={` ${todo.status === "completed" ? "bg-green-500" : "bg-orange-300"} relative text-lg drop-shadow-lg rounded-lg px-3 py-6 my-2`}>
                               <div>
-                                <div className="relative mr-5 mb-2 ">{todo.title}</div>
+                                <div className="relative mb-2 ">{todo.title}</div>
                                 <div className="absolute h-4 w-9 text-xs bottom-2 right-3">#{todo.id}</div>
                                 <div className="absolute h-4 w-fit text-xs bottom-2 left-3">Due: {todo.due_on}</div>
                               </div>
@@ -106,14 +109,14 @@ export const ToDoCard: React.FC<CardProps> = ({ id, title, due_on, status }) => 
                           </div>
                         )}
                       </Draggable>
-                      {provided.placeholder}
+                      {/* {provided.placeholder} */}
                     </div>
                     )}
                   </Droppable>
-                    ))}
-                  </div>
+                  ))}
                 </div>
             </div>
+          </div>
           <Button onClick={handleClick}/>
 
         </DragDropContext>
