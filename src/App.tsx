@@ -32,28 +32,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const onDragEnd = (result: any) => {
-    const { destination, source } = result;
-    if (!destination) {
-      return;
-    }
-    if (destination.index === source.index) {
-      return;
-    }
-    moveCard(source.index, destination.index);
-  };
-  
-  const moveCard = (dragIndex: number, hoverIndex: number) => {
-    const dragCard = todoList[dragIndex];
-    setTodoList(
-      update(todoList, {
-        $splice: [
-          [dragIndex, 1],
-          [hoverIndex, 0, dragCard],
-        ],
-      }),
-    );
-  };
 
   return (
     <div className="App w-screen h-screen justify-center items-center m-12">
@@ -111,12 +89,3 @@ const App: React.FC = () => {
 
 
 export default App;
-
-// const RenderCard = () => {
-//   return (
-//     <div className="relative bg-slate-200 shadow-md rounded-lg px-6 py-6 w-56 mb-6">
-//       <div className="absolute h-3 w-3 rounded-full bg-green-600 top-3 right-3"></div>
-//       What to do, what to do....
-//     </div>
-//   );
-// };
